@@ -2,10 +2,10 @@ package com.varsha.ecommerce.entity;
 
 import com.varsha.ecommerce.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 @Entity
-@Getter
+@Data
 @Table(name = "users")
 public class User {
 

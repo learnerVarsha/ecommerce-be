@@ -1,14 +1,19 @@
 package com.varsha.ecommerce.controller;
 
 import com.varsha.ecommerce.dto.AuthenticationDTO;
+import com.varsha.ecommerce.dto.SignUpDTO;
+import com.varsha.ecommerce.dto.UserDTO;
 import com.varsha.ecommerce.entity.User;
 import com.varsha.ecommerce.repository.UserRepository;
+import com.varsha.ecommerce.service.AuthService;
 import com.varsha.ecommerce.service.CustomUserDetailsService;
 import com.varsha.ecommerce.service.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +35,7 @@ public class AuthenticationController {
     private final CustomUserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final AuthService authService;
 
     @PostMapping("/authenticate")
     public void createAuthToken(@RequestBody AuthenticationDTO dto, HttpServletResponse response) throws
@@ -51,6 +57,14 @@ public class AuthenticationController {
         );
 
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwt);
+    }
+
+    public ResponseEntity<?> signUpUser(@RequestBody SignUpDTO dto){
+        if(authService.hasUserWithEmail(dto.getEmail())){
+            return new ResponseEntity<>("User already exists", HttpStatus.NOT_ACCEPTABLE);
+        }
+        UserDTO userDTO = authService.createUser(dto);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
 }
